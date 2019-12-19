@@ -22,6 +22,7 @@ struct ipts_params ipts_modparams = {
 
 	.debug = false,
 	.debug_thread = false,
+	.dump_buffers = false,
 };
 
 IPTS_PARAM(ignore_fw_fallback, bool, 0400,
@@ -43,4 +44,6 @@ IPTS_PARAM(debug, bool, 0400,
 IPTS_PARAM(debug_thread, bool, 0400,
 	"Periodically print the ME status into the kernel log. (default: false)"
 );
-
+IPTS_PARAM(dump_buffers, bool, 0400,
+	"Print the GuC input / output buffers into the kernel log. (default: false)"
+);

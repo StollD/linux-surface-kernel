@@ -19,6 +19,7 @@ struct ipts_params {
 
 	bool debug;
 	bool debug_thread;
+	bool dump_buffers;
 };
 
 extern struct ipts_params ipts_modparams;

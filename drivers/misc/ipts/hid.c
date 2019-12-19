@@ -355,6 +355,18 @@ static int handle_outputs(struct ipts_info *ipts, int parallel_idx)
 	u32 tr_id;
 	int i, payload_size, ret = 0, header_size;
 
+	if (ipts_modparams.dump_buffers) {
+		char *raw_data_buffer =
+			ipts->resource.touch_data_buffer_raw[parallel_idx].addr;
+		struct touch_raw_data *raw_data =
+			(struct touch_raw_data *)raw_data_buffer;
+
+		ipts_dbg(ipts, "Input Buffer [%d]:\n", parallel_idx);
+		print_hex_dump(KERN_DEBUG, "", DUMP_PREFIX_NONE, 32, 1,
+			raw_data->raw_data,
+			raw_data->header.raw_data_size_bytes, false);
+	}
+
 	header_size = sizeof(struct kernel_output_buffer_header);
 	output_buf = ipts_get_output_buffers_by_parallel_id(ipts,
 			parallel_idx);
@@ -377,6 +389,13 @@ static int handle_outputs(struct ipts_info *ipts, int parallel_idx)
 			hid_input_report(ipts->hid, HID_INPUT_REPORT,
 				input_report, payload_size, 1);
 
+			if (!ipts_modparams.dump_buffers)
+				break;
+
+			ipts_dbg(ipts, "Output Buffer [%d][%d]:",
+				parallel_idx, i);
+			print_hex_dump(KERN_DEBUG, "", DUMP_PREFIX_NONE, 32, 1,
+				payload, payload_size, false);
 			break;
 		}
 		case OUTPUT_BUFFER_PAYLOAD_HID_FEATURE_REPORT: {
@@ -394,6 +413,13 @@ static int handle_outputs(struct ipts_info *ipts, int parallel_idx)
 
 			memcpy(fb_buf->addr, payload, payload_size);
 
+			if (!ipts_modparams.dump_buffers)
+				break;
+
+			ipts_dbg(ipts, "Feedback Buffer [%d][%d]:",
+				parallel_idx, i);
+			print_hex_dump(KERN_DEBUG, "", DUMP_PREFIX_NONE, 32, 1,
+				payload, payload_size, false);
 			break;
 		}
 		case OUTPUT_BUFFER_PAYLOAD_ERROR: {
